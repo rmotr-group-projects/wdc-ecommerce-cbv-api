@@ -19,16 +19,16 @@ $ make runserver
 
 ### Description
 
-The main goal of this project is to practice all the concepts related with APIs and Django REST Framework.
+The main goal of this project is to practice all the concepts related with APIs and Django's Class Based Views.
 
 We'll make use of the Ecommerce project that we've been working on, and implement all the endpoints related with the `Product` model.
 
 
 ### Your tasks
 
-You'll be in charged of implementing an API using Django REST Framework.
+You'll be in charged of implementing an API using Django's Class Based Views (CBV).
 
-For this task, views must be implemented inside `api/views.py`, serializers inside `api/serializers.py` and urls inside `api/urls.py`.
+For this task, views must be implemented inside `api/views.py` and urls inside `api/urls.py`. We already provide a function called `serialize_product_as_json`, located in `api/serializers.py`, that serializes a Product model into a JSON document. You should use this function to format most of the API responses.
 
 A couple of Product objects are already loaded in your database, so you can test the endpoints directly from the browser when you point to the proper URL.
 

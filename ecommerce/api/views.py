@@ -44,7 +44,8 @@ class ProductView(View):
         
     def post(self, *args, **kwargs):
         try:
-            payload = json.loads(self.request.body)
+            #payload = json.loads(self.request.body)
+            payload = json.loads(self.request.body.decode('utf-8'))
         except ValueError:
             return JsonResponse(
                 {"success": False, "msg": "Provide a valid JSON payload"},
@@ -140,7 +141,8 @@ class ProductView(View):
                 {"success": False, "msg": "Could not find product with id: {}".format(product_id)},
                 status=404)
         try:
-            payload = json.loads(self.request.body)
+            #payload = json.loads(self.request.body)
+            payload = json.loads(self.request.body.decode('utf-8'))
         except ValueError:
             return JsonResponse(
                 {"success": False, "msg": "Provide a valid JSON payload"},
@@ -155,7 +157,8 @@ class ProductView(View):
                 {"success": False, "msg": "Could not find product with id: {}".format(product_id)},
                 status=404)
         try:
-            payload = json.loads(self.request.body)
+            #payload = json.loads(self.request.body)
+            payload = json.loads(self.request.body.decode('utf-8'))
         except ValueError:
             return JsonResponse(
                 {"success": False, "msg": "Provide a valid JSON payload"},

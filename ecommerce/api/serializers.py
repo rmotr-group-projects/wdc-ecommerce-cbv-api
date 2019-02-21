@@ -1,6 +1,7 @@
 from products.models import Product, Category
 
 
+# converts Product into JSON format
 def serialize_product_as_json(product):
     return {
         'id': product.id,

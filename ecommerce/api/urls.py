@@ -5,7 +5,7 @@ from api import views
 
 urlpatterns = [
     # write your URL rules here
-    path('products/<int:product_id>', views.ProductView.as_view()), # Question: break this down
+    path('products/<int:product_id>/', views.ProductView.as_view()), # Question: break this down
     path('products/', views.ProductView.as_view() ),
 ]
 

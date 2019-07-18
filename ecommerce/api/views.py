@@ -72,4 +72,48 @@ class ProductView(View):
         pass
 
     def put(self, *args, **kwargs):
-        pass
+        
+        if kwargs != {}:
+            try:
+                prod = Product.objects.get(id=kwargs['id'])
+                
+            except:
+                pass        
+        
+        try:
+            payload = json.loads(self.request.body)
+        except ValueError:
+            return JsonResponse(
+                {"success": False, "msg": "Provide a valid JSON payload"},
+                status=400)
+        
+        category = payload['category']
+        try:
+            cat_obj = Category.objects.get(id=category)
+            
+        except:
+            return JsonResponse(
+                {"response":"Not a valid category"}, status=400
+            )
+
+        try:
+            Product.objects.get(id=kwargs['id']).update(
+                name = payload['name'],
+                category = category,
+                sku = payload['sku'],
+                description = payload['description'],
+                price = payload['price']
+            )
+            
+            
+            print(prod)
+            return JsonResponse(
+                serialize_product_as_json(prod), status=200, safe=False
+            )
+        except:
+            return JsonResponse(
+                {"response":"An error has occured"}, status=400
+            )
+        
+        
+        return JsonResponse({},status=400,safe=False)

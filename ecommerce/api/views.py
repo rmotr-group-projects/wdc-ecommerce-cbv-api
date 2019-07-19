@@ -57,7 +57,7 @@ class ProductView(View):
                 Product.objects.get(id=prod_id).delete()
                 return JsonResponse(
                     {"Response":"Product Id # {} delete".format(prod_id)},
-                    status=200
+                    status=204
                 )
                 
             except:
@@ -68,8 +68,45 @@ class ProductView(View):
         
         return JsonResponse({},status=400,safe=False)
 
+    def _check_name_and_update(self,product):
+        product_fields = ['id','name','sku','category','description','price']
+        payload = json.loads(self.request.body)
+        fields_update = []
+        for key in payload.keys():
+            if key in product_fields:
+                fields_update.append(key)
+                continue
+            else:
+                return JsonResponse({"success": False, "msg": "Provide a valid JSON payload"},status=400)
+
+        for field in fields_update:
+            try:
+                setattr(product,field,payload[field])
+            except:
+                return JsonResponse({"success": False, "msg": "Provide a valid JSON payload"},status=400)
+        
+        product.save()
+        data = serialize_product_as_json(product)
+        return data
+
     def patch(self, *args, **kwargs):
-        pass
+                
+        if kwargs != {}:
+            try:
+                prod = Product.objects.get(id=kwargs['id'])
+                
+            except:
+                pass        
+        try:
+            payload = json.loads(self.request.body)
+        except ValueError:
+            return JsonResponse(
+                {"success": False, "msg": "Provide a valid JSON payload"},
+                status=400)
+        
+        data = self._check_name_and_update(prod)
+        return JsonResponse(data,status=200)
+        
 
     def put(self, *args, **kwargs):
         
@@ -95,21 +132,16 @@ class ProductView(View):
             return JsonResponse(
                 {"response":"Not a valid category"}, status=400
             )
+        print(prod)
+        try:   
+            prod.name = payload['name']
+            prod.sku = payload['sku']
+            prod.description = payload['description']
+            prod.price = payload['price']
+            prod.category = Category.objects.get(id=category)
+            prod.save()
 
-        try:
-            Product.objects.get(id=kwargs['id']).update(
-                name = payload['name'],
-                category = category,
-                sku = payload['sku'],
-                description = payload['description'],
-                price = payload['price']
-            )
-            
-            
-            print(prod)
-            return JsonResponse(
-                serialize_product_as_json(prod), status=200, safe=False
-            )
+            return JsonResponse(serialize_product_as_json(prod), status=200)
         except:
             return JsonResponse(
                 {"response":"An error has occured"}, status=400

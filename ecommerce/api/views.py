@@ -9,16 +9,27 @@ from django.http import HttpResponse, JsonResponse
 
 class ProductView(View):
 
+    def _get_object(self, product_id):
+        try:
+            return Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return None
+
     def get(self, *args, **kwargs):
-      
-        if kwargs != {}:
-            product = Product.objects.get(id=kwargs['id'])
-            product = serialize_product_as_json(product)
-            return JsonResponse(product,status=200)
+        product_id = kwargs.get('product_id')
+        if product_id:
+            # detail
+            product = self._get_object(product_id)
+            if not product:
+                return JsonResponse(
+                    {"success": False, "msg": "Could not find product with id: {}".format(product_id)},
+                    status=404)
+            data = serialize_product_as_json(product)
         else:
-            all_prods = Product.objects.all()
-            all_prods = [serialize_product_as_json(item) for item in all_prods]
-            return JsonResponse(all_prods,status=200,safe=False)
+            # list
+            qs = Product.objects.all()
+            data = [serialize_product_as_json(product) for product in qs]
+        return JsonResponse(data, status=200, safe=False)
 
 
     def post(self, *args, **kwargs):
@@ -51,22 +62,19 @@ class ProductView(View):
         return JsonResponse(data,status=201)
 
     def delete(self, *args, **kwargs):
-        if kwargs != {}:
-            try:
-                prod_id = kwargs['id']
-                Product.objects.get(id=prod_id).delete()
-                return JsonResponse(
-                    {"Response":"Product Id # {} delete".format(prod_id)},
-                    status=204
-                )
-                
-            except:
-                return JsonResponse(
-                    {"Product Not Found":"Can't find matching Id"},
-                     status=404,safe=False
-                     )
-        
-        return JsonResponse({},status=400,safe=False)
+        product_id = kwargs.get('product_id')
+        if not product_id:
+            return JsonResponse(
+                {'msg': 'Invalid HTTP method', 'success': False},
+                status=400)
+        product = self._get_object(product_id)
+        if not product:
+            return JsonResponse(
+                {"success": False, "msg": "Could not find product with id: {}".format(product_id)},
+                status=404)
+        product.delete()
+        data = {"success": True}
+        return JsonResponse(data, status=204, safe=False)
 
     def _check_name_and_update(self,product):
         product_fields = ['id','name','sku','category','description','price']
@@ -90,13 +98,7 @@ class ProductView(View):
         return data
 
     def patch(self, *args, **kwargs):
-                
-        if kwargs != {}:
-            try:
-                prod = Product.objects.get(id=kwargs['id'])
-                
-            except:
-                pass        
+        prod = self._get_object(kwargs['product_id'])
         try:
             payload = json.loads(self.request.body)
         except ValueError:
@@ -112,7 +114,7 @@ class ProductView(View):
         
         if kwargs != {}:
             try:
-                prod = Product.objects.get(id=kwargs['id'])
+                prod = Product.objects.get(id=kwargs['product_id'])
                 
             except:
                 pass        
@@ -132,13 +134,14 @@ class ProductView(View):
             return JsonResponse(
                 {"response":"Not a valid category"}, status=400
             )
-        print(prod)
+    
         try:   
             prod.name = payload['name']
             prod.sku = payload['sku']
             prod.description = payload['description']
             prod.price = payload['price']
             prod.category = Category.objects.get(id=category)
+            prod.featured = payload['featured']
             prod.save()
 
             return JsonResponse(serialize_product_as_json(prod), status=200)

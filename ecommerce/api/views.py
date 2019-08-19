@@ -59,7 +59,7 @@ class ProductView(View):
         # THIS BLOCK might need to be implemented to include a Category?
         # when creating a new procuct we need to know the category id to link it to an 
         # existing category. If we don't get a category id we return an error message. 
-        category_id = payload.get('category_id', None)
+        category_id = payload.get('category', None)
         try:
             category = Category.objects.get(id=category_id)
         except Category.DoesNotExist:
@@ -97,12 +97,12 @@ class ProductView(View):
                 status=404)
         product.delete()
         data = {"success": True}
-        return JsonResponse(data, status=200, safe=False)
+        return JsonResponse(data, status=204, safe=False)
 
     # need a helper function
 
     def _update(self, product, payload, partial=False):
-        for field in ['name', 'sku', 'category_id', 'description', 'price']:
+        for field in ['name', 'sku', 'category', 'description', 'price', 'featured']:
             if not field in payload:
                 if partial:
                     continue
@@ -110,10 +110,10 @@ class ProductView(View):
                     {"success": False, "msg": "Missing field in full update"},
                     status=400)
             # category
-            if field == 'category_id':
-                category_id = payload.get('category_id', None)
+            if field == 'category':
+                
                 try:
-                    category = Category.objects.get(id=category_id)
+                    payload['category'] = Category.objects.get(id=payload['category'])
                 except Category.DoesNotExist:
                     return JsonResponse(
                         {"success": False, "msg": "Could not find category with id: {}".format(category_id)},

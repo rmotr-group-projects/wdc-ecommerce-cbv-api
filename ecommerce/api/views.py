@@ -59,7 +59,7 @@ class ProductView(View):
         # THIS BLOCK might need to be implemented to include a Category?
         # when creating a new procuct we need to know the category id to link it to an 
         # existing category. If we don't get a category id we return an error message. 
-        category_id = payload.get('category', None)
+        category_id = payload.get('category_id', None)
         try:
             category = Category.objects.get(id=category_id)
         except Category.DoesNotExist:
@@ -119,14 +119,8 @@ class ProductView(View):
                         {"success": False, "msg": "Could not find category with id: {}".format(category_id)},
                         status=404)
 
-                # category_id = 
-                # try:
-                #     payload['category_id'] = Category.objects.get(id=payload['category_id'])
-                # except Category.DoesNotExist:
-                #     return JsonResponse(
-                #         {"success": False, "msg": "Could not find category with id: {}".format(payload['category_id'])},
-                #         status=404)
-            try:       #product is an instance of product set within the function
+                
+            try:       #product is an instance of product set within the function#
                 setattr(product, field, payload[field])
                 product.save()
             except ValueError:

@@ -36,7 +36,7 @@ class ProductView(View):
         try:
             category=Category.object.get(id=category_id)
         except Category.DoesNotExist:
-            return JsonResponse("success": False, "msg":"that category ain't right"}, status=400)
+            return JsonResponse({"success": False, "msg":"that category ain't right"}, status=400)
         try: 
             product=Product.object.create(name=payload['name'],category=category,sku=payload['sku'],description=payload['description'], price=payload['price'],))
         except (ValueError, KeyError):

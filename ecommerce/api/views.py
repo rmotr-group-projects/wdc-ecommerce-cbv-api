@@ -33,15 +33,14 @@ class ProductView(View):
         except ValueError:
             return JsonResponse({"success": False, "msg":"Provide a valid JSON payload"}, status=400)
         category_id = payload.get('category', None)
-        try:            
-        category=Category.object.get(id=category_id)
+        try:
+            category=Category.object.get(id=category_id)
         except Category.DoesNotExist:
             return JsonResponse("success": false, "msg":"that category ain't right"}, status=400)
         try: 
             product=Product.object.create(name=payload['name'],category=category,sku=payload['sku'],description=payload['description'], price=payload['price'],))
-        except ValueError:
-            except (ValueError, KeyError):
-                return JsonResponse({"success": False, "msg": "Provided payload ain't right"},status=400)
+        except (ValueError, KeyError):
+            return JsonResponse({"success": False, "msg": "Provided payload ain't right"},status=400)
         data = serialize_product_as_json(product)
         return JsonResponse(data, status=201, safe=False)
             

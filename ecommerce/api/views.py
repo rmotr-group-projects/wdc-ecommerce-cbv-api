@@ -48,7 +48,29 @@ class ProductView(View):
         product.delete()
         data = {"success":True}
         return JsonResponse(data, status=200, safe=False)
-        
+    
+    def _update(self, product, payload, partial=False):
+        for field in ['name', 'category', 'sku', 'description', 'price', 'featured']:
+            if not field in payload:
+                if partial:
+                    continue
+                return JsonResponse(
+                    {"success": False, "msg": "Missing field in full update"},status=400)
+            if field == 'category':
+                try:
+                    payload['category'] = Category.objects.get(id=payload['category'])
+                except Category.DoesNotExist:
+                    return JsonResponse(
+                        {"success": False, "msg": "Could not find planet with id: {}".format(payload['category'])}, status=404)
+            try:
+                setattr(product, field, payload[field])
+                product.save()
+            except ValueError:
+                return JsonResponse(
+                    {"success": False, "msg": "Provided payload is not valid"},
+                    status=400)
+        data = serialize_product_as_json(product)
+        return JsonResponse(data, status=200, safe=False)
 
     def patch(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
@@ -61,7 +83,7 @@ class ProductView(View):
             payload = json.loads(self.request.body)
         except ValueError:
             return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
-        return self.update(people, payload, partiel=True)
+        return self._update(people, payload, partiel=True)
     
     def put(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
@@ -74,4 +96,4 @@ class ProductView(View):
             payload = json.loads(self.request.body)
         except ValueError:
             return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
-        return self.update(people, payload, partiel=True)
+        return self._update(people, payload, partiel=True)

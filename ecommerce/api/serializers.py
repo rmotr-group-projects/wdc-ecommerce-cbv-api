@@ -3,7 +3,7 @@ from products.models import Product, Category
 
 def serialize_product_as_json(product):
     return {
-        'id': product.id,
+        'product_id': product.id,
         'name': product.name,
         'sku': product.sku,
         'category': product.category.id,

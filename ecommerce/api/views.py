@@ -29,7 +29,7 @@ class ProductView(View):
     
     def post(self, *args, **kwargs):
         if 'product_id' in kwargs:
-           return JsonResponse({"success": False, "msg": "Product already exists"}, status=400)
+            return JsonResponse({"success": False, "msg": "Product already exists"}, status=400)
         try:         
             payload = json.loads(self.request.body)
         except ValueError:

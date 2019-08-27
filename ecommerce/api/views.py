@@ -47,7 +47,7 @@ class ProductView(View):
             return JsonResponse({success: False, "msg": "unable to find product with id {}".format(product_id)}, status = 404)
         product.delete()
         data = {"success":True}
-        return JsonResonse(data, status=200, safe=False)
+        return JsonResponse(data, status=200, safe=False)
         
 
     def patch(self, *args, **kwargs):

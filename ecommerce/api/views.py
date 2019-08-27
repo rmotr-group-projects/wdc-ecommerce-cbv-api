@@ -83,7 +83,7 @@ class ProductView(View):
             payload = json.loads(self.request.body)
         except ValueError:
             return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
-        return self._update(people, payload, partiel=True)
+        return self._update(product, payload, partiel=True)
     
     def put(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
@@ -96,4 +96,4 @@ class ProductView(View):
             payload = json.loads(self.request.body)
         except ValueError:
             return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
-        return self._update(people, payload, partiel=True)
+        return self._update(product, payload, partiel=True)

@@ -5,11 +5,8 @@ from api.serializers import serialize_product_as_json
 from django.views.generic import View
 from django.http import HttpResponse, JsonResponse
 
-# complete the View below with all REST functionality
-#serialize_product_as_json()
 class ProductView(View):
-    
-    def _get_objects(self,product_id):
+    def _get_object(self,product_id):
         try:
             return Product.objects.get(id=product_id)
         except Product.DoesNotExist:

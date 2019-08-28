@@ -34,7 +34,7 @@ class ProductView(View):
             return JsonResponse({"success": False, "msg":"Provide a valid JSON payload"}, status=400)
         category_id = payload.get('category', None)
         try:
-            category=Category.object.get(id=category_id)
+            category=Category.objects.get(id=category_id)
         except Category.DoesNotExist:
             return JsonResponse({"success": False, "msg":"that category ain't right"}, status=400)
         try: 

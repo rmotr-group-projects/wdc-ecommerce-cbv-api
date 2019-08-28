@@ -47,14 +47,18 @@ class ProductView(View):
     def delete(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
         if not product_id:
-            return JsonResponse({"success": False, "msg": "invalid HTTP method"}, status = 400)
+            return JsonResponse(
+                {'msg': 'Invalid HTTP method', 'success': False},
+                status=400)
         product = self._get_object(product_id)
         if not product:
-            return JsonResponse({success: False, "msg": "unable to find product with id {}".format(product_id)}, status = 404)
+            return JsonResponse(
+                {"success": False, "msg": "Could not find product with id: {}".format(product_id)},
+                status=404)
         product.delete()
-        data = {"success":True}
+        data = {"success": True}
         return JsonResponse(data, status=204, safe=False)
-    
+
     def _update(self, product, payload, partial=False):
         for field in ['name', 'category', 'sku', 'description', 'price', 'featured']:
             if not field in payload:
@@ -81,25 +85,25 @@ class ProductView(View):
     def patch(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
         if not product_id:
-            return JsonResponse({"success": False, "msg": "invalid HTTP method"}, status = 400)
+            return JsonResponse({"success": False, "msg": "invalid HTTP method"}, status=400)
         product = self._get_object(product_id)
         if not product:
             return JsonResponse({"success": False, "msg": "Product with id {} doesn't exist, bucko".format(product_id)}, status=404)
         try:
             payload = json.loads(self.request.body)
         except ValueError:
-            return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
+            return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status=400)
         return self._update(product, payload, partial=True)
     
     def put(self, *args, **kwargs):
         product_id = kwargs.get('product_id')
         if not product_id:
-            return JsonResponse({"success": False, "msg": "invalid HTTP method"}, status = 400)
+            return JsonResponse({"success": False, "msg": "invalid HTTP method"}, status=400)
         product = self._get_object(product_id)
         if not product:
             return JsonResponse({"success": False, "msg": "Product with id {} doesn't exist, bucko".format(product_id)}, status=404)
         try:
             payload = json.loads(self.request.body)
         except ValueError:
-            return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status = 400)
+            return JsonResponse({"success":False, "msg": "Invalid JSON paylod there, chief"}, status=400)
         return self._update(product, payload, partial=True)

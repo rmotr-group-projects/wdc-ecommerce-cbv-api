@@ -38,7 +38,7 @@ class ProductView(View):
         except Category.DoesNotExist:
             return JsonResponse({"success": False, "msg":"that category ain't right"}, status=400)
         try: 
-            product=Product.object.create(name=payload['name'],category=category,sku=payload['sku'],description=payload['description'], price=payload['price'],)
+            product=Product.objects.create(name=payload['name'],category=category,sku=payload['sku'],description=payload['description'], price=payload['price'],)
         except (ValueError, KeyError):
             return JsonResponse({"success": False, "msg": "Provided payload ain't right"},status=400)
         data = serialize_product_as_json(product)

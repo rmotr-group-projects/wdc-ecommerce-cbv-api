@@ -1,2 +1,2 @@
-Django==2.1.4
+Django==2.2.13
 freezegun==0.3.11
